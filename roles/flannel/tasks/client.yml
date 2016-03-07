@@ -1,0 +1,44 @@
+---
+#- name: Install flannel
+#  action: "{{ ansible_pkg_mgr }}"
+#  args:
+#        name: flannel
+#        state: latest
+#  when: not is_atomic
+
+- name: etcd version
+  set_fact:
+    flannel_version: "0.5.5"
+
+- name: Download tar file
+  get_url:
+    url: "https://github.com/coreos/flannel/releases/download/v{{ flannel_version }}/flannel-{{ flannel_version }}-linux-amd64.tar.gz"
+    dest: /tmp/.ansible/files
+    validate_certs: False
+
+- name: Extract tar file
+  unarchive:
+    src: "/tmp/.ansible/files/flannel-{{ flannel_version }}-linux-amd64.tar.gz"
+    dest: /usr/local
+    copy: no
+
+- name: Create symlinks
+  file:
+    src: /usr/local/flannel-{{ flannel_version }}/{{ item }}
+    dest: /usr/local/bin/{{ item }}
+    state: link
+  with_items:
+    - flanneld
+
+- name: Install Flannel config file
+  template: src=flanneld.conf.j2 dest=/etc/init/flanneld.conf
+
+- name: Install Flannel config file
+  template: src=flanneld.j2 dest=/etc/default/flanneld
+  notify:
+    - restart flannel
+
+- name: Launch Flannel
+  service: name=flanneld state=started enabled=yes
+  notify:
+    - restart flannel

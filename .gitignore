@@ -1,0 +1,6 @@
+myinventory
+inventory
+*.swp
+*~
+*.retry
+bin

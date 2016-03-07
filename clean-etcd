@@ -1,0 +1,5 @@
+ansible all -a "sudo service etcd stop" --private-key=~/.ssh/amazon.pem
+
+ansible all -a "sudo rm -rf /var/lib/etcd/member" --private-key=~/.ssh/amazon.pem
+
+ansible all -a "sudo rm -rf /var/etcd/default.etcd" --private-key=~/.ssh/amazon.pem
