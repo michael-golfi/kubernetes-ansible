@@ -1,9 +1,8 @@
-
 [masters]
-snell.ciena.com
+master
 
 [etcd]
-snell.ciena.com
+master
 
 [nodes]
-snell.ciena.com
+master
