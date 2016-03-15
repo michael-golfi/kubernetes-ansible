@@ -1,19 +1,16 @@
 #!/bin/bash
 
-# Copyright 2015 The Kubernetes Authors All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+ssh-keygen -t rsa
 
-inventory=${INVENTORY:-inventory}
+cat ~/.ssh/id_rsa.pub | ssh snell@snell.ciena.com 'mkdir -p ~/.ssh && \
+	cat >> ~/.ssh/authorized_keys && \
+	chmod 700 ~/.ssh && \
+	chmod 640 ~/.ssh/authorized_keys && \
+	echo master > /etc/hostname'
 
-ansible-playbook -i ${inventory} cluster.yml $@
+wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip install netaddr --upgrade
+
+sudo echo 'pipelining = True
+control_path=/tmp/ansible-ssh-%%h-%%p-%%r' >> /etc/ansible/ansible.cfg
+
+ansible-playbook -i inventory.example.single_master cluster.yml --private-key=~/.ssh/id_rsa

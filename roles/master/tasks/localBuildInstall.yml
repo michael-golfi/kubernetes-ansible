@@ -1,4 +1,9 @@
 ---
+- name: Create the /tmp/binaries directory
+  file:
+    path: "{{ localBuildOutput }}"
+    state: directory
+
 - name: Download kube binaries
   get_url:
     url: "https://storage.googleapis.com/kubernetes-release/release/v{{ KUBERNETES_VERSION }}/bin/linux/amd64/{{ item }}"
@@ -9,6 +14,7 @@
     - kube-scheduler
     - kube-controller-manager
     - kubectl
+    - kube-proxy
     - kubelet
 
 - name: Copy master binaries
@@ -38,7 +44,7 @@
 
 - name: Upstart service files
   copy:
-    src: ../init/upstart/{{ item }}
+    src: init/upstart/{{ item }}
     dest: /etc/init/
     mode: 0644
   when: ansible_distribution == "Ubuntu" and ansible_distribution_major_version|int < 15

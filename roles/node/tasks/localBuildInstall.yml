@@ -1,4 +1,9 @@
 ---
+- name: Create the /tmp/binaries directory
+  file:
+    path: /tmp/binaries
+    state: directory
+
 - name: Download kube binaries
   get_url:
     url: "https://storage.googleapis.com/kubernetes-release/release/v{{ KUBERNETES_VERSION }}/bin/linux/amd64/{{ item }}"
@@ -23,7 +28,7 @@
 
 - name: Copy node service files
   copy:
-    src: ../init/systemd/{{ item }}
+    src: init/systemd/{{ item }}
     dest: /etc/systemd/system/
     mode: 0644
   with_items:
